@@ -18,6 +18,11 @@ class User(Base):
     user_name = Column(String(10), nullable=False)
     password = Column(String(10), nullable=False)
 
+    posts = relationship('Post', backref="author")
+    post_likes = relationship('PostLike', backref="user")
+    comments = relationship('Comment', backref="author")
+    coment_likes = relationship('CommentLike', backref="author")
+
 
 class Post(Base):
     __tablename__ = 'post'
@@ -28,7 +33,9 @@ class Post(Base):
     latitude = Column(String(8))
     longitude = Column(String(8))
     user_id = Column(Integer, ForeignKey('user.id'))
-    user = relationship(User)
+
+    comments = relationship("Comment", backref="post")
+    likes = relationship("PostLike", backref="post")
 
 
 class Comment(Base):
@@ -37,27 +44,22 @@ class Comment(Base):
     content = Column(String(300), nullable=False)
     date_published = Column(DateTime, nullable=False)
     user_id = Column(Integer, ForeignKey('user.id'))
-    user = relationship(User)
     post_id = Column(Integer, ForeignKey('post.id'))
-    post = relationship(Post)
+    likes = relationship("ComentLike", backref="comment")
 
 
 class PostLike(Base):
     __tablename__ = 'post_like'
     id = Column(Integer, primary_key=True)
     user_id = Column(Integer, ForeignKey('user.id'))
-    user = relationship(User)
     post_id = Column(Integer, ForeignKey('post.id'))
-    post = relationship(Post)
 
 
 class CommentLike(Base):
     __tablename__ = 'comment_like'
     id = Column(Integer, primary_key=True)
     user_id = Column(Integer, ForeignKey('user.id'))
-    user = relationship(User)
     comment_id = Column(Integer, ForeignKey('comment.id'))
-    comment = relationship(Comment)
 
     def to_dict(self):
         return {}
